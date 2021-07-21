@@ -79,3 +79,5 @@ Basic text formatting can be done with the **tf:** keyword:
 `//text style (center + bold + italic) tf:l,bi`
 
 Note that the formatting values must be separated by a comma **,** and no spaces should be left.
+
+![alt text]("/Editor/GUI/Screen Shot 2021-07-22.png" "example hierarchy")
