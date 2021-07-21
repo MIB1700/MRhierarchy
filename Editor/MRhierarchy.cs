@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-//TODO: decouple from MRextensions... should be standalone package!!
-//TODO: text: allow BOLD, ITALIC, and position, i.e. left, center right...
 
 namespace MR.Hierarchy
 {
@@ -21,7 +19,7 @@ namespace MR.Hierarchy
 
         //types we want to be able to use
         //add new types here and handle them in the switch statement below...
-        static private string[] types = { "gr:", "bg:", "b:", "t:", "bs:", "ts:", "icon:", "icn:", "ic:"};
+        static private string[] types = { "gr:", "bg:", "b:", "t:", "bs:", "ts:", "tf:", "icon:", "icn:", "ic:"};
 
         //dict to hold any gradient texture we already created...
         static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
@@ -93,6 +91,9 @@ namespace MR.Hierarchy
                 bool iconOn         = false;
                 string gradientname = "";
 
+                var fontSt = FontStyle.BoldAndItalic;
+                var fontAlign = TextAnchor.MiddleCenter;
+
                 var offset = BackgroundRect;
                 gameObject.SetActive(false);
 
@@ -156,6 +157,9 @@ namespace MR.Hierarchy
                         case "ts:":
                             textSize = ConvertStringToFloat(after, 12);
                             break;
+                        case "tf:": //text format
+                            (fontSt, fontAlign) = ConvertStringToTextFormat(after);
+                            break;
                         case "icon:": //all 3 options are allowed for displaying icon...
                         case "icn:":
                         case "ic:":
@@ -192,10 +196,10 @@ namespace MR.Hierarchy
                     EditorGUI.LabelField(BackgroundRect, name, new GUIStyle()
                         {
                             normal = new GUIStyleState() { textColor = textColour },
-                            fontStyle = FontStyle.BoldAndItalic,
+                            fontStyle = fontSt,
                             fontSize = (int)textSize,
                             wordWrap = true,
-                            alignment = TextAnchor.MiddleCenter
+                            alignment = fontAlign
                         }
                     );
                 }
@@ -210,6 +214,45 @@ namespace MR.Hierarchy
                 //  Debug.Log($"ICON BackgroundRect: {BackgroundRect}");
                 DrawIcon(BackgroundRect, texturedMR);
             }
+        }
+
+        private static (FontStyle fontStyle, TextAnchor fontAlign) ConvertStringToTextFormat (string name) {
+
+            var formatting = name.Split(',');
+
+            FontStyle fontSt = FontStyle.BoldAndItalic;
+            TextAnchor fontAlign = TextAnchor.MiddleCenter;
+
+            foreach (var format in formatting)
+            {
+                switch (format)
+                {
+                    case "i":
+                        fontSt = FontStyle.Italic;
+                        break;
+                    case "b":
+                        fontSt = FontStyle.Bold;
+                        break;
+                    case "ib":
+                    case "bi":
+                        fontSt = FontStyle.BoldAndItalic;
+                        break;
+                    case "n":
+                        fontSt = FontStyle.Normal;
+                        break;
+                    case "l":
+                        fontAlign = TextAnchor.MiddleLeft;
+                        break;
+                    case "c":
+                        fontAlign = TextAnchor.MiddleCenter;
+                        break;
+                    case "r":
+                        fontAlign = TextAnchor.MiddleRight;
+                        break;
+                }
+            }
+
+            return (fontSt, fontAlign);
         }
 
         private static (string withoutType, string final) GetStringAfterType(string cString, string type)
