@@ -1,3 +1,6 @@
+using System.Collections.Specialized;
+using System.Numerics;
+using System.Reflection;
 using System.Diagnostics;
 using System.Drawing;
 using UnityEngine;
@@ -19,10 +22,11 @@ namespace MR.Hierarchy
 
         //types we want to be able to use
         //add new types here and handle them in the switch statement below...
-        static private string[] types = { "gr:", "bg:", "b:", "t:", "bs:", "ts:", "tf:", "icon:", "icn:", "ic:"};
+        static private string[] types = { "gr:", "bg:", "b:", "t:", "bs:", "ts:", "tf:", "icon:", "icn:", "ic:", "x:"};
 
         //dict to hold any gradient texture we already created...
         static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+        static UnityEngine.Vector3 defLoc = UnityEngine.Vector3.one * -10000;
 
         static MRhierarchy()
         {
@@ -96,6 +100,7 @@ namespace MR.Hierarchy
 
                 var offset = BackgroundRect;
                 gameObject.SetActive(false);
+                gameObject.transform.position = defLoc;
 
                 //make sure "/" is removed even if no types are changed!
                 var name = gameObject.name.Replace("/", "");
@@ -164,6 +169,10 @@ namespace MR.Hierarchy
                         case "icn:":
                         case "ic:":
                             iconOn = true;
+                            break;
+                        case "x:":
+                            gameObject.SetActive(true);
+                            gameObject.transform.position = UnityEngine.Vector3.zero;
                             break;
                     }
                 }
@@ -260,9 +269,10 @@ namespace MR.Hierarchy
             string newStr = "";
             string finalName = "";
 
-            if (type.Equals("icon:") || type.Equals("icn:") || type.Equals("ic:")) {
+            //switches
+            if (type.Equals("icon:") || type.Equals("icn:") || type.Equals("ic:") || type.Equals("x:")) {
 
-                //type "icon:" is a switch so there's nothing after it... don't check for spaces!
+                //type "icon:" and "X:" are switches so there's nothing after it... don't check for spaces!
                 finalName = cString;
             }
             else {

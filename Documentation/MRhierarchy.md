@@ -6,6 +6,8 @@ For example, we can add a background colour, border colour (and size), text colo
 
 To activate this use **//** (i.e. double slash; same as creating a comment in your C# script) at the beginning of the GameObject's name. Then you may name it, or leave the name blank.
 
+By default the *MRhierarchy* object is disabled and moved to location (-10000, -10000, -10000). This can be turned off with the **x:** keyword (see below).
+
 `//Coloured Default`
 
 Default colours are *black* background with *red* text and no border.
@@ -20,6 +22,7 @@ Default colours are *black* background with *red* text and no border.
 + tf:   => text format
 + gr:   => gradient with two colours separated by **-** (e.g. red-blue)
 + icon: icn: ic:    => draw MRicon
++ x:    => turn gameObject on and center in scene
 
 using **b:=** results in the border being the same colour as the background (i.e. no border)
 All UnityEngine.Color predefined colours are allowed to be used:
@@ -44,11 +47,11 @@ For example:
 
 `//----- Fish ----- gr:magenta-cyan b:black bs:3`
 
-Instead of using a colour-name (i.e. __red__), adding the keyword **rgb:** or **rgba:** followed by floating point numbers (0. - 1.) describing your values will also create a colour for you:
+Instead of using a colour-name (i.e. *red*), adding the keyword **rgb:** or **rgba:** followed by floating point numbers (0. - 1.) describing your values will also create a colour for you:
 
 `//Custom Colours bg:rgb:0.75,0,0.75 b:=`
 
-Note that currently the colour values must be separated by a comma **,** and no spaces should be left.
+Note that the colour values must be separated by a comma **,** and no spaces should be left.
 
 Gradients can also be formatted using the **rgb:** and **rgba:** keywords:
 
@@ -56,7 +59,7 @@ Gradients can also be formatted using the **rgb:** and **rgba:** keywords:
 
 `//Gradients with alpha gr:rgb:0,1,0-rgba:1,0,0,0.5`
 
-The **tf:** keyword allows to do basic text formatting:
+Basic text formatting can be done with the **tf:** keyword:
 
 + n     => normal text
 + i     => italic
@@ -74,3 +77,5 @@ The **tf:** keyword allows to do basic text formatting:
 `//text style (left + bold) tf:l,b`
 
 `//text style (center + bold + italic) tf:l,bi`
+
+Note that the formatting values must be separated by a comma **,** and no spaces should be left.
