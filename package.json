@@ -13,7 +13,7 @@
     "email": "services@martin-ritter.com",
     "url": "https://www.martin-ritter.com"
   },
-  "description": "Basic Editor extension for colouring and \"enhancing\" hierarchy objects using commands typed directly into the GameObject",
+  "description": "MRhierarchy allows you to colourize and customize the look of GameObjects in the Hierarchy.\nThis may be useful for organizing various parts of the hierarchy more clearly.\nFor example, we can add a background colour, border colour (and size), text colour (and size).\n\nTo activate this use // (i.e. double slash; same as creating a comment in your C# script) at the beginning of the GameObject's name. Then you may name it, or leave the name blank.\n\nFor example:\n\n//EnemyTypes bg:red b:green bs:4 t:black ts: 16",
   "hideInEditor": false,
   "samples": [
     {
