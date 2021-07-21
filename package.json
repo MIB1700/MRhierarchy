@@ -1,0 +1,26 @@
+{
+  "name": "com.mr.hierarchy",
+  "version": "1.0.0",
+  "displayName": "MR Hierarchy",
+  "unity": "2019.4",
+  "keywords": [
+    "vector",
+    "extension",
+    "MR"
+  ],
+  "author": {
+    "name": "Martin Ritter",
+    "email": "services@martin-ritter.com",
+    "url": "https://www.martin-ritter.com"
+  },
+  "description": "Basic Editor extension for colouring and \"enhancing\" hierarchy objects using commands typed directly into the GameObject",
+  "hideInEditor": false,
+  "samples": [
+    {
+      "displayName": "Sample Scene",
+      "description": "Description for sample 1",
+      "path": "Samples~/Scenes"
+    }
+  ],
+  "type": "tool"
+}
