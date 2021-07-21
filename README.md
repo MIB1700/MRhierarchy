@@ -33,7 +33,7 @@ All UnityEngine.Color predefined colours are allowed to be used:
 and example use could be:
 
 
-`// EnemyTypes bg:red b:green bs:4 t:black ts: 16`\
+`// EnemyTypes bg:red b:green bs:4 t:black ts: 16`
 
 `// Terrain gr:yellow-green `
 
