@@ -80,4 +80,4 @@ Basic text formatting can be done with the **tf:** keyword:
 
 Note that the formatting values must be separated by a comma **,** and no spaces should be left.
 
-![screenshot](Editor/GUI/ScreenShot.png)
+![screenshot](Editor/GUI/ScreenShotCombined.png)
