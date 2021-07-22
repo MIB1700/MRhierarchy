@@ -80,4 +80,4 @@ Basic text formatting can be done with the **tf:** keyword:
 
 Note that the formatting values must be separated by a comma **,** and no spaces should be left.
 
-!(https://github.com/MIB1700/MRhierarchy/blob/main/Editor/GUI/Screen%20Shot%202021-07-22.png)
+!(https://github.com/MIB1700/MRhierarchy/blob/main/Editor/GUI/Screen%20Shot%202021-07-22.png?raw=true)
