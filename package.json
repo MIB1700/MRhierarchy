@@ -1,11 +1,14 @@
 {
   "name": "com.mr.hierarchy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "MR Hierarchy",
   "unity": "2019.4",
   "keywords": [
-    "vector",
+    "editor",
     "extension",
+    "hierarchy",
+    "organization",
+    "tool",
     "MR"
   ],
   "author": {

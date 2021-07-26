@@ -1,8 +1,8 @@
 {
-    "name": "com.mr.hierarchy",
+    "name": "com.MR.hierarchy",
     "rootNamespace": "",
     "references": [
-        "com.mr.basicExtensionsRoot"
+        ""
     ],
     "includePlatforms": [
         "Editor"
