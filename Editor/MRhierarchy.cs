@@ -1,8 +1,3 @@
-using System.Collections.Specialized;
-using System.Numerics;
-using System.Reflection;
-using System.Diagnostics;
-using System.Drawing;
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -13,50 +8,36 @@ using System.Linq;
 namespace MR.Hierarchy
 {
     [InitializeOnLoad]
-    public class MRhierarchy : /*MonoBehaviour*/ Editor
+    public class MRhierarchy : Editor
     {
-        static Texture2D texturedMR;
-
-        static bool isInited = false;
-        static UnityEngine.Color[] defaultGradient = {UnityEngine.Color.red, UnityEngine.Color.blue};
-
+//***********************************************************************/
         //types we want to be able to use
         //add new types here and handle them in the switch statement below...
-        static private string[] types = { "gr:", "bg:", "b:", "t:", "bs:", "ts:", "tf:", "icon:", "icn:", "ic:", "x:"};
+
+        static private string[] types = { "gr:",                        //gradient
+                                          "bg:", "b:",                  //background colour and border colour
+                                          "bs:",                        //border size/width
+                                          "t:",                         //text colour
+                                          "ts:", "tf:",                 //text size and text formatting
+                                          "icon:", "icn:", "ic:",       //draw icon
+                                          "x:"                          //activate GO and center in scene
+                                        };
+
+//***********************************************************************/
+        static Texture2D texturedMR; //will hold the logo
+        static bool isInited = false; //check if logo was loaded
+        static UnityEngine.Color[] defaultGradient = {UnityEngine.Color.red, UnityEngine.Color.blue};
 
         //dict to hold any gradient texture we already created...
         static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         static UnityEngine.Vector3 defLoc = UnityEngine.Vector3.one * -10000;
-
+//-------------------------------------
         static MRhierarchy()
         {
             EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowItemOnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
         }
-
-        //initialize the png asset...
-        static void Initialize()
-        {
-            if (isInited)
-            {
-                return;
-            }
-
-            string[] guids2 = AssetDatabase.FindAssets("MR_icon_blue_32x32 t:texture2D");
-
-            if (guids2.Length >= 1)
-            {
-                var pathToPng = AssetDatabase.GUIDToAssetPath(guids2[0]);
-                texturedMR = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>(pathToPng);
-            }
-            else
-            {
-                UnityEngine.Debug.LogError($"MR_icon_blue_32x32.png NOT FOUND...");
-            }
-
-            isInited = true;
-        }
-
+//-------------------------------------
         static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
         {
             var gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
@@ -70,6 +51,7 @@ namespace MR.Hierarchy
             //* icon drawer needs the BackgroundRect info...
             Rect BackgroundRect = new Rect();
 
+            //! something weird is going on here with the offsets... double check
             float xPos  = selectionRect.position.x + 60f - 28f - selectionRect.xMin;
             float yPos  = selectionRect.position.y;
             float xSize = selectionRect.size.x + selectionRect.xMin + 28f - 60 + 16f;
@@ -90,13 +72,13 @@ namespace MR.Hierarchy
                 float borderSize    = 2f;
                 bool borderOn       = false; //draw the border
                 bool gradientOn     = false; //draw the gradient
-                bool colourOn       = true; //draw the single colour
-                bool textOn         = true; //draw the text
+                bool colourOn       = true;  //draw the single colour
+                bool textOn         = true;  //draw the text
                 bool iconOn         = false;
                 string gradientname = "";
 
-                var fontSt = FontStyle.BoldAndItalic;
-                var fontAlign = TextAnchor.MiddleCenter;
+                var fontSt      = FontStyle.BoldAndItalic;
+                var fontAlign   = TextAnchor.MiddleCenter;
 
                 var offset = BackgroundRect;
                 gameObject.SetActive(false);
@@ -125,18 +107,17 @@ namespace MR.Hierarchy
                     switch (type)
                     {
                         case "gr:":
-                            gradientOn = true;
-                            borderOn = false;
+                            gradientOn   = true;
+                            borderOn     = false;
                             gradientname = after;
                             gradientCols = ConvertStringToColors(after, defaultGradient);
-                            offset = BackgroundRect;
+                            offset       = BackgroundRect;
                             break;
                         case "bg:":
                             colourOn = true;
                             backGroundColour = ConvertStringToColor(after, UnityEngine.Color.white);
                             break;
                         case "b:":
-                            //* "b:" is always checked  AFTER the "bg:"; that's why we can do this now
                             if (after.Equals("="))
                             {
                                 //when border "=" (i.e. equals) the background color, simple don't draw border at all
@@ -214,22 +195,25 @@ namespace MR.Hierarchy
                 }
 
                 if (iconOn) {
-                    DrawIcon(BackgroundRect, texturedMR);
+                    DrawIcon(BackgroundRect, texturedMR, borderSize);
                 }
             }
 
+            //When adding the IMR (interface) to any script the logo will be drawn
+            //IMR is an empty interface... only here to identify scripts on GOs we want to draw a logo on
             if (gameObject.GetComponent(typeof(IMR)))
             {
                 //  Debug.Log($"ICON BackgroundRect: {BackgroundRect}");
-                DrawIcon(BackgroundRect, texturedMR);
+                DrawIcon(BackgroundRect, texturedMR, 2f);
             }
         }
-
+//-------------------------------------
         private static (FontStyle fontStyle, TextAnchor fontAlign) ConvertStringToTextFormat (string name) {
 
             var formatting = name.Split(',');
 
-            FontStyle fontSt = FontStyle.BoldAndItalic;
+            //default formatting
+            FontStyle fontSt     = FontStyle.BoldAndItalic;
             TextAnchor fontAlign = TextAnchor.MiddleCenter;
 
             foreach (var format in formatting)
@@ -263,7 +247,7 @@ namespace MR.Hierarchy
 
             return (fontSt, fontAlign);
         }
-
+//-------------------------------------
         private static (string withoutType, string final) GetStringAfterType(string cString, string type)
         {
             string newStr = "";
@@ -276,18 +260,19 @@ namespace MR.Hierarchy
                 finalName = cString;
             }
             else {
-
+                //in case a rogue space snuck in, remove it
                 finalName = CheckForWhiteSpaceAfterType(cString, type);
             }
 
             //remove the "//" since we done't want to see this on the GO in the hierarchy
+            //shouldn't be needed, removed earlier...
             finalName = finalName.Replace("/", "");
 
             //split string into words, delimited by spaces
             var strgs = finalName.Split(' ');
 
-            //loop through words, checking for the "type", return the string after the type and a string
-            //containing the type AND the string after it!
+            //loop through words, checking for the "type", return the string after the type and the remaining string
+            //containing with the type and string removed!
             foreach (var str in strgs)
             {
                 if (str.Contains(type))
@@ -301,10 +286,12 @@ namespace MR.Hierarchy
             }
             return (null, null);
         }
-
+//-------------------------------------
         private static UnityEngine.Color ConvertRGBstringToColor(string noType, UnityEngine.Color defCol) {
 
+            //only keep digits, "," and "."... then split it...
             var argb = new string(noType.Where(c => Char.IsDigit(c) || c==',' || c=='.').ToArray()).Split(',');
+
             List<float> nCol = new List<float>();
 
             foreach (var col in argb)
@@ -326,7 +313,7 @@ namespace MR.Hierarchy
 
             return defCol;
         }
-
+//-------------------------------------
         //try to convert the string to a Unity Color...
         private static UnityEngine.Color ConvertStringToColor(string noType, UnityEngine.Color defCol)
         {
@@ -335,6 +322,7 @@ namespace MR.Hierarchy
                 return defCol;
             }
 
+            //need to check for "rg" because the "b:" type removes the "b:" or "rgb:"...
             if (noType.ToLower().Contains("rg") || noType.ToLower().Contains("rga") ||
                 noType.ToLower().Contains("rgb:") || noType.ToLower().Contains("rgba:")) {
 
@@ -353,7 +341,7 @@ namespace MR.Hierarchy
                 }
             }
         }
-
+//-------------------------------------
         //split the string of gradient colours appart and return Unity Colors
         private static UnityEngine.Color[] ConvertStringToColors(string noType, UnityEngine.Color[] defCol)
         {
@@ -364,10 +352,12 @@ namespace MR.Hierarchy
 
             List<UnityEngine.Color> colours = new List<UnityEngine.Color>();
 
+            //should be two words separated by "-"
             var cols = noType.Split('-');
 
             foreach (var col in cols)
             {
+                //need to check for "rg" because the "b:" type removes the "b:" or "rgb:"...
                 if (col.ToLower().Contains("rg") || col.ToLower().Contains("rga") ||
                 col.ToLower().Contains("rgb:") || col.ToLower().Contains("rgba:")) {
 
@@ -394,7 +384,7 @@ namespace MR.Hierarchy
 
             return defCol;
         }
-
+//-------------------------------------
         private static float ConvertStringToFloat(string noType, float def)
         {
             if (Single.TryParse(noType, out float offset))
@@ -403,7 +393,7 @@ namespace MR.Hierarchy
             }
             return def;
         }
-
+//-------------------------------------
         private static string CheckForWhiteSpaceAfterType(string cString, string type)
         {
             var typeExists = cString.IndexOf(type, System.StringComparison.Ordinal);
@@ -430,24 +420,43 @@ namespace MR.Hierarchy
             }
             return nameCheck;
         }
-
-
+//-------------------------------------
         //this is for drawing the image... not useful yet...
-        private static void DrawIcon(Rect rect, Texture2D icon)
+        private static void DrawIcon(Rect rect, Texture2D icon, float borderSize)
         {
-
             //look for assets only if we are actually trying to use them...
             Initialize();
-            // Debug.Log($"ICON ORIGrect: {selectionRect}");
-            rect.x = rect.x + rect.width - 15 - 2f;
-            // Debug.Log($"ICONrect: {selectionRect}");
+            rect.x = rect.x + rect.width - 15 - borderSize;
 
             GUI.Label(rect, icon);
         }
+//-------------------------------------
+         //initialize the png asset...
+        static void Initialize()
+        {
+            if (isInited)
+            {
+                return;
+            }
 
+            string[] guids2 = AssetDatabase.FindAssets("MR_icon_blue_32x32 t:texture2D");
+
+            if (guids2.Length >= 1)
+            {
+                var pathToPng = AssetDatabase.GUIDToAssetPath(guids2[0]);
+                texturedMR = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>(pathToPng);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError($"MR_icon_blue_32x32.png NOT FOUND...");
+            }
+
+            isInited = true;
+        }
+//-------------------------------------
         private static Texture2D CreateGradientTexture(int width, int height, UnityEngine.Color colorOne, UnityEngine.Color colorTwo, string gradientKey)
         {
-            //check if texture already exists...
+            //check if texture already exists in textures dictionary...
             if(textures.TryGetValue(gradientKey, out Texture2D temp))
             {
                 // Debug.Log($"Dict DOES contain {gradientKey}");
@@ -478,20 +487,20 @@ namespace MR.Hierarchy
                 return tex;
             }
         }
+//-------------------------------------
+        // private static Texture2D CreateTextureWithColor(UnityEngine.Color color)
+        // {
 
-        private static Texture2D CreateTextureWithColor(UnityEngine.Color color)
-        {
+        //     Texture2D tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+        //     tex.hideFlags = HideFlags.HideAndDontSave;
 
-            Texture2D tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            tex.hideFlags = HideFlags.HideAndDontSave;
+        //     tex.SetPixel(0, 0, color);
+        //     tex.wrapMode = TextureWrapMode.Clamp;
+        //     tex.Apply();
 
-            tex.SetPixel(0, 0, color);
-            tex.wrapMode = TextureWrapMode.Clamp;
-            tex.Apply();
-
-            return tex;
-        }
-
+        //     return tex;
+        // }
+//-------------------------------------
         private static Rect Shrink(Rect self, float offset) {
 
             self.xMin     += offset;
