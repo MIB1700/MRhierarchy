@@ -322,7 +322,7 @@ namespace MR.Hierarchy
                 return defCol;
             }
 
-            //need to check for "rg" because the "b:" type removes the "b:" or "rgb:"...
+            //need to check for "rg" because the "b:" type removes the "b:" of "rgb:"...
             if (noType.ToLower().Contains("rg") || noType.ToLower().Contains("rga") ||
                 noType.ToLower().Contains("rgb:") || noType.ToLower().Contains("rgba:")) {
 
@@ -357,7 +357,7 @@ namespace MR.Hierarchy
 
             foreach (var col in cols)
             {
-                //need to check for "rg" because the "b:" type removes the "b:" or "rgb:"...
+                //need to check for "rg" because the "b:" type removes the "b:" of "rgb:"...
                 if (col.ToLower().Contains("rg") || col.ToLower().Contains("rga") ||
                 col.ToLower().Contains("rgb:") || col.ToLower().Contains("rgba:")) {
 
